@@ -26,6 +26,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: app-config
+                  key: env          
           resources:
             requests:
               cpu: "50m"
