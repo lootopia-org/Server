@@ -6,6 +6,13 @@ spec:
   replicas: 3
   template:
     spec:
+      initContainers:
+        - name: migrate
+          image: your-image
+          command: ["/app/migrate"]
+          envFrom:
+            - configMapRef:
+              name: app-config
       containers:
         - name: server
           envFrom:

@@ -34,4 +34,4 @@ WORKDIR /app
 COPY --from=builder /tmp/server /app/server
 COPY --from=builder /tmp/migrate /app/migrate
 RUN chmod +x /app/server /app/migrate
-ENTRYPOINT ["/bin/sh", "-c", "/app/migrate && exec /app/server"]
+ENTRYPOINT ["/app/server"]
