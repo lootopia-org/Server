@@ -1,20 +1,12 @@
 FROM haskell:9.6 AS builder
 
 RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg \
-    lsb-release \
     pkg-config \
     zlib1g-dev \
     libgmp-dev \
-    build-essential
-
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgres.gpg && \
-    apt-get update && \
-    apt-get install -y \
-      libpq-dev \
-      postgresql-client-16
+    libpq-dev \
+    build-essential \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
 COPY . .
