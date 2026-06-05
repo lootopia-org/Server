@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-        - name: core
+        - name: Server
           env:
             - name: ENV
               valueFrom:
