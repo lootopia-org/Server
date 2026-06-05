@@ -5,7 +5,6 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     zlib1g-dev \
     libgmp-dev \
-    postgresql-client-15 \
     libpq-dev \
  && rm -rf /var/lib/apt/lists/*
 
