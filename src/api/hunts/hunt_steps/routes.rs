@@ -16,5 +16,5 @@ pub fn router() -> Router<AppState> {
         .route("/complete/{id}", post(complete_step))
         .route("/{id}", patch(update_step))
         .route("/{id}", delete(delete_step))
-        .route("/{id}", patch(completed_steps))
+        .route("/completed/{id}", get(completed_steps))
 }
