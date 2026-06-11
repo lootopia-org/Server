@@ -41,7 +41,7 @@ pub async fn list_hunts(
     State(state): State<AppState>,
     _auth: AuthedUser,
 ) -> ApiResult<Json<Vec<HuntResp>>> {
-    let hunts: Vec<Hunt> = query_list!(&state.pool, Hunt, "hunts", "ORDER BY created_at DESC");
+    let hunts: Vec<Hunt> = query_list!(&state.pool, Hunt, "hunts");
     Ok(Json(hunts.into_iter().map(HuntResp::from).collect()))
 }
 
