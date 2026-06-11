@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -18,7 +18,10 @@ use crate::{
     error::{ApiError, ApiResult},
     event::{event::Event, event_types, topics},
     hunts::{
-        dto::{CreateHunt, HuntDetail, HuntParticipantResp, HuntResp, JoinHunt, UpdateHunt},
+        dto::{
+            CreateHunt, HuntDetail, HuntFilters, HuntParticipantResp, HuntResp, JoinHunt,
+            UpdateHunt,
+        },
         models::{Hunt, HuntParticipant},
     },
     query_create, query_delete, query_get, query_join, query_list, query_scale, query_update,
@@ -40,8 +43,19 @@ async fn hunt_steps(state: &AppState, hunt_id: Uuid) -> anyhow::Result<Vec<HuntS
 pub async fn list_hunts(
     State(state): State<AppState>,
     _auth: AuthedUser,
+    Query(filters): Query<HuntFilters>,
 ) -> ApiResult<Json<Vec<HuntResp>>> {
-    let hunts: Vec<Hunt> = query_list!(&state.pool, Hunt, "hunts");
+    let hunts: Vec<Hunt> = match filters.status {
+        Some(status) => query_list!(
+            &state.pool,
+            Hunt,
+            "hunts",
+            "status = $1 ORDER BY created_at DESC",
+            status
+        ),
+        None => query_list!(&state.pool, Hunt, "hunts"),
+    };
+
     Ok(Json(hunts.into_iter().map(HuntResp::from).collect()))
 }
 

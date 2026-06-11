@@ -82,6 +82,11 @@ pub struct HuntParticipantResp {
     pub completed_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
+#[derive(Deserialize)]
+pub struct HuntFilters {
+    pub status: Option<String>,
+}
+
 impl_from!(Hunt => HuntResp {
     id,
     title,
