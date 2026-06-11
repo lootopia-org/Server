@@ -27,6 +27,7 @@ use crate::{
         webauthn,
     },
     error::{ApiError, ApiResult},
+    profiles::models::UserProfiles,
     query_create, query_delete, query_get, query_scale, query_update,
     state::AppState,
     utils::{
@@ -190,6 +191,24 @@ pub async fn login(
         "session={}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age={}",
         token, SESSION_MAX_AGE
     );
+
+    let existing = query_get!(
+        &state.pool,
+        UserProfiles,
+        "user_profiles",
+        "user_id",
+        user.id
+    );
+    if existing.is_none() {
+        query_create!(&state.pool, UserProfiles, "user_profiles",
+            "user_id" => user.id,
+            "points" => 0,
+            "level" => 1.0,
+            "completed_hunts" => 0,
+            "updated_at" => *NOW
+        );
+    }
+
     Ok((
         [(SET_COOKIE, HeaderValue::from_str(&cookie).unwrap())],
         Json(LoginResp {

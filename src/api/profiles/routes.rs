@@ -14,7 +14,6 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/list", get(list_profiles))
         .route("/", get(get_profile))
-        .route("/", post(create_profile))
         .route("/", patch(update_profile))
         .route("/", delete(delete_profile))
 }

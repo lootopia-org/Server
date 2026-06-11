@@ -38,32 +38,6 @@ pub async fn get_profile(
     Ok(Json(profile.into()))
 }
 
-pub async fn create_profile(
-    State(state): State<AppState>,
-    auth: AuthedUser,
-) -> ApiResult<impl IntoResponse> {
-    let existing = query_get!(
-        &state.pool,
-        UserProfiles,
-        "user_profiles",
-        "user_id",
-        auth.user.id
-    );
-    if existing.is_some() {
-        return Err(ApiError::conflict("profile already exists"));
-    }
-
-    let profile = query_create!(&state.pool, UserProfiles, "user_profiles",
-        "user_id" => auth.user.id,
-        "points" => 0,
-        "level" => 1.0,
-        "completed_hunts" => 0,
-        "updated_at" => *NOW
-    );
-
-    Ok((StatusCode::CREATED, Json(Profile::from(profile))))
-}
-
 pub async fn update_profile(
     State(state): State<AppState>,
     auth: AuthedUser,
