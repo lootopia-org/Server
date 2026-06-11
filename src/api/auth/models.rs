@@ -16,8 +16,8 @@ pub struct User {
     pub totp_secret: Option<Vec<u8>>,
     pub totp_enabled: bool,
     pub role: String,
-    pub avatar: String,
-    pub bio: String,
+    pub avatar: Option<String>,
+    pub bio: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

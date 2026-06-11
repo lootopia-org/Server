@@ -18,7 +18,7 @@ use crate::{
         },
         dto::{
             CodeReq, CredentialResp, EmailReq, ForgotPasswordReq, LoginReq, LoginResp, MeResp,
-            MfaTotpReq, RegisterReq, ResetPasswordReq, TokenResp, TotpEnrollResp,
+            MfaTotpReq, RegisterReq, ResetPasswordReq, TokenResp, TotpEnrollResp, UpdateMeta,
             VerifyEmailParams, WebauthnCompleteReq,
         },
         email,
@@ -74,6 +74,24 @@ pub async fn register(
     Ok(message(
         "registered; check your email to verify your address",
     ))
+}
+
+pub async fn update_meta_data(
+    State(state): State<AppState>,
+    auth: AuthedUser,
+    Json(req): Json<UpdateMeta>,
+) -> ApiResult<Json<UpdateMeta>> {
+    let user = query_update!(
+        &state.pool,
+        User,
+        "users",
+        "id",
+        auth.user.id,
+        "bio" => &req.bio,
+        "avatar" => &req.avatar
+    );
+
+    Ok(Json(user.into()))
 }
 
 pub async fn issue_verification(state: &AppState, user_id: Uuid, email: &str) -> ApiResult<()> {

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::Uuid;
 
-use crate::utils::types::nullable;
+use crate::{auth::models::User, impl_from, utils::types::nullable};
 
 #[derive(Debug, Deserialize)]
 pub struct RegisterReq {
@@ -14,6 +14,14 @@ pub struct RegisterReq {
     #[serde(default, deserialize_with = "nullable")]
     pub bio: Option<String>,
     pub password: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateMeta {
+    #[serde(default, deserialize_with = "nullable")]
+    pub avatar: Option<String>,
+    #[serde(default, deserialize_with = "nullable")]
+    pub bio: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -99,3 +107,8 @@ pub struct CredentialResp {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
 }
+
+impl_from!(User => UpdateMeta {
+    bio,
+    avatar
+});
