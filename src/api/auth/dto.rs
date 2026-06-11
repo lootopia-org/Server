@@ -9,8 +9,10 @@ use crate::utils::types::nullable;
 pub struct RegisterReq {
     pub email: String,
     pub username: String,
-    pub avatar: String,
-    pub bio: String,
+    #[serde(default, deserialize_with = "nullable")]
+    pub avatar: Option<String>,
+    #[serde(default, deserialize_with = "nullable")]
+    pub bio: Option<String>,
     pub password: String,
 }
 

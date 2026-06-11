@@ -4,7 +4,7 @@ use anyhow::Context;
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::Message;
-use tracing::{info, warn};
+use tracing::warn;
 
 use super::KafkaConfig;
 
@@ -27,8 +27,6 @@ impl KafkaConsumer {
         consumer
             .subscribe(&[&config.topic])
             .context("subscribing to Kafka topic")?;
-
-        info!(topic = %config.topic, "Kafka live-event relay started");
 
         loop {
             match consumer.recv().await {

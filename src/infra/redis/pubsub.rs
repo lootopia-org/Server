@@ -2,7 +2,7 @@ use anyhow::Context;
 use futures::StreamExt;
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
-use tracing::{info, warn};
+use tracing::warn;
 
 #[derive(Clone)]
 pub struct RedisPubSub {
@@ -35,8 +35,8 @@ impl RedisPubSub {
         F: Fn(T) + Send + Sync + 'static,
         T: for<'de> serde::Deserialize<'de>,
     {
-        let client = redis::Client::open(self.url.as_str())
-            .context("creating Redis pub/sub client")?;
+        let client =
+            redis::Client::open(self.url.as_str()).context("creating Redis pub/sub client")?;
         let mut pubsub = client
             .get_async_pubsub()
             .await
@@ -46,8 +46,6 @@ impl RedisPubSub {
             .subscribe(channel)
             .await
             .context("subscribing to Redis channel")?;
-
-        info!(channel = %channel, "Redis live-event listener started");
 
         let mut stream = pubsub.on_message();
         while let Some(message) = stream.next().await {
