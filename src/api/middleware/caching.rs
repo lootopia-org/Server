@@ -14,7 +14,6 @@ use http_body_util::BodyExt;
 fn derive_cache_keys(pattern: &str, real_path: &str) -> Vec<String> {
     let pat_segs: Vec<&str> = pattern.trim_start_matches('/').split('/').collect();
     let real_segs: Vec<&str> = real_path.trim_start_matches('/').split('/').collect();
-
     let mut keys: Vec<String> = Vec::new();
 
     let Some(root) = pat_segs.first() else {
@@ -30,6 +29,7 @@ fn derive_cache_keys(pattern: &str, real_path: &str) -> Vec<String> {
 
     for (i, seg) in pat_segs.iter().enumerate().skip(1) {
         let is_param = seg.starts_with(':') || (seg.starts_with('{') && seg.ends_with('}'));
+
         if is_param {
             let value = real_segs.get(i).copied().unwrap_or("unknown");
             let param = seg
@@ -40,10 +40,11 @@ fn derive_cache_keys(pattern: &str, real_path: &str) -> Vec<String> {
             keys.push(format!("{{{singular}}}:{{{value}}}"));
 
             if param != "id" {
-                keys.push(format!("{{{singular}_{param}}}:{{{value}}}"));
-            } else {
-                keys.push(format!("{{{singular}_steps}}:{{{value}}}"));
+                let param_singular = param.trim_end_matches('s');
+                keys.push(format!("{{{singular}_{param_singular}}}:{{{value}}}"));
             }
+        } else {
+            keys.push(format!("{root}_{seg}"));
         }
     }
 
@@ -86,6 +87,8 @@ pub async fn cache_middleware(
                 }
                 _ => primary_key(&pattern, &path),
             };
+
+            tracing::info!(key);
 
             if let Ok(Some(cached)) = state.event_handler.get::<String>(&key).await {
                 return (
