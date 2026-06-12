@@ -32,14 +32,17 @@ fn derive_cache_keys(pattern: &str, real_path: &str) -> Vec<String> {
         let is_param = seg.starts_with(':') || (seg.starts_with('{') && seg.ends_with('}'));
         if is_param {
             let value = real_segs.get(i).copied().unwrap_or("unknown");
-            let param = seg.trim_start_matches(':');
+            let param = seg
+                .trim_start_matches(':')
+                .trim_start_matches('{')
+                .trim_end_matches('}');
 
-            keys.push(format!("{singular}:{value}"));
+            keys.push(format!("{{{singular}}}:{{{value}}}"));
 
             if param != "id" {
-                keys.push(format!("{singular}_{param}:{value}"));
+                keys.push(format!("{{{singular}_{param}}}:{{{value}}}"));
             } else {
-                keys.push(format!("{singular}_steps:{value}"));
+                keys.push(format!("{{{singular}_steps}}:{{{value}}}"));
             }
         }
     }
